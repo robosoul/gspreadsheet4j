@@ -35,7 +35,6 @@ import org.hoshisoft.tools.gs.formatters.*;
 
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
 import com.google.gdata.data.PlainTextConstruct;
-import com.google.gdata.data.spreadsheet.CustomElementCollection;
 import com.google.gdata.data.spreadsheet.ListEntry;
 import com.google.gdata.data.spreadsheet.ListFeed;
 import com.google.gdata.data.spreadsheet.SpreadsheetEntry;
@@ -106,6 +105,7 @@ public class GoogleSpreadsheet {
     }
     
     /**
+     * Creates new instance of class GoogleSpreadsheet.
      * 
      * @param key
      * @param title
@@ -129,7 +129,7 @@ public class GoogleSpreadsheet {
     
 
     /**
-     * Adds new worksheet with spacified name (title) and dimensions.
+     * Adds new worksheet spacified by <code>workSheetName</code> and dimensions.
      * 
      * @param workSheetName
      *            title of the worksheet
@@ -185,7 +185,7 @@ public class GoogleSpreadsheet {
 
     
     /**
-     * Loads worksheet with specific title.
+     * Loads worksheet specified with <code>worksheetTitle</code>.
      * 
      * @param worksheetTitle
      *            worksheet title to be loaded
@@ -293,7 +293,7 @@ public class GoogleSpreadsheet {
     
     
     /**
-     * Deletes worksheet specified with worksheetTitle.
+     * Deletes worksheet specified with <code>worksheetTitle</code>.
      * 
      * @param worksheetTitle title of a worksheet to be deleted.
      * 
@@ -406,7 +406,8 @@ public class GoogleSpreadsheet {
     
     
     /**
-     * Prints content of a worksheet, specified with worksheetTitle to stdout.
+     * Prints content of worksheet, specified with <code>worksheetTitle</code> 
+     * to a standard out in tsv format.
      * 
      * @param worksheetTitle
      *            the title of worksheet whos content is to be printed
@@ -417,7 +418,8 @@ public class GoogleSpreadsheet {
 
     
     /**
-     * Writes content of a worksheet, specified with worksheetTitle to file.
+     * Prints content of worksheet, specified with <code>worksheetTitle</code> 
+     * to a <code>file</code> in tsv format.
      * 
      * @param worksheetTitle
      * @param file
@@ -430,6 +432,8 @@ public class GoogleSpreadsheet {
 
     
     /**
+     * Prints content of worksheet, specified with <code>worksheetTitle</code> 
+     * to <code>where</code>, formating output with <code>formatter</code>.
      * 
      * @param worksheetTitle
      * @param where
@@ -444,7 +448,9 @@ public class GoogleSpreadsheet {
 
     
     /**
-     * 
+     * Prints <code>entries</code> to <code>where</code>, formating output with
+     * <code>formatter</code>.
+     *
      * @param entries
      * @param where
      */
@@ -463,40 +469,8 @@ public class GoogleSpreadsheet {
             }
         }
     }
-
-    public static final Character TAB = new Character('\t');
-
-    /**
-     * Returns tab sepparated string representation of input entry.
-     * 
-     * @param entry
-     * @param isHeader
-     * @return
-     */
-    protected static String listEntryToTSVLine(ListEntry entry, boolean isHeader) {
-        StringBuilder sb = new StringBuilder();
-
-        CustomElementCollection elements = entry.getCustomElements();
-
-        boolean isFirst = true;
-        for (String tag : elements.getTags()) {
-            if (!isFirst) {
-                sb.append(TAB);
-            } else {
-                isFirst = false;
-            }
-
-            if (isHeader) {
-                sb.append(tag);
-            } else {
-                sb.append(elements.getValue(tag));
-            }
-        }
-
-        return sb.toString();
-    }
-
     
+
     /**
      * Returns list of ListEntry objects for a input worksheetTitle.
      * 
@@ -527,6 +501,7 @@ public class GoogleSpreadsheet {
         return projection;
     }
 
+    public static final Character URL_PATH_SEPARATOR = '/';
     
     /**
      * Returns google spreadesheet api v3 URL.
@@ -547,13 +522,13 @@ public class GoogleSpreadsheet {
             throws MalformedURLException {
         StringBuilder url = new StringBuilder();
 
-        url.append(scope).append("/");
+        url.append(scope).append(URL_PATH_SEPARATOR);
 
         if (key != null) {
-            url.append(key).append("/");
+            url.append(key).append(URL_PATH_SEPARATOR);
         }
 
-        url.append(visibility).append("/");
+        url.append(visibility).append(URL_PATH_SEPARATOR);
         url.append(projection);
 
         return new URL(url.toString());
