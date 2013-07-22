@@ -19,9 +19,9 @@ package org.hoshisoft.tools.gs.enums;
 public enum GoogleDocumentsProjection {
     FULL("full"), BASIC("basic");
     
-    private String value;
+    private final String value;
     
-    private GoogleDocumentsProjection(String value) {
+    private GoogleDocumentsProjection(final String value) {
         this.value = value;        
     }
     
@@ -29,7 +29,7 @@ public enum GoogleDocumentsProjection {
         return value;
     }
     
-    public GoogleDocumentsProjection fromValue(String v) {
+    public GoogleDocumentsProjection fromValue(final String v) {
         for (GoogleDocumentsProjection p : GoogleDocumentsProjection.values()) {
             if (p.value.equals(v)) {
                 return p;

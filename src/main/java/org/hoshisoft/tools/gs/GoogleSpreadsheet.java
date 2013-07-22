@@ -64,7 +64,7 @@ public class GoogleSpreadsheet {
     private String visibility;
     private String projection;
 
-    private Map<String, List<ListEntry>> data = null;
+    private Map<String, List<ListEntry>> data;
 
     public Set<String> getLoadedWorksheetTitles() {
         return data.keySet();
@@ -87,12 +87,12 @@ public class GoogleSpreadsheet {
      *            Google Documents projection
      */
     public GoogleSpreadsheet(
-            String key,
-            String title,
-            String username,
-            String password,
-            GoogleDocumentsVisibility visibility,
-            GoogleDocumentsProjection projection) {
+            final String key,
+            final String title,
+            final String username,
+            final String password,
+            final GoogleDocumentsVisibility visibility,
+            final GoogleDocumentsProjection projection) {
 
         this.key = key;
         this.title = title;
@@ -113,10 +113,10 @@ public class GoogleSpreadsheet {
      * @param password
      */
     public GoogleSpreadsheet(
-            String key,
-            String title,
-            String username,
-            String password) {
+            final String key,
+            final String title,
+            final String username,
+            final String password) {
 
         this(
             key,
@@ -143,15 +143,21 @@ public class GoogleSpreadsheet {
      * @throws IOException
      * @throws ServiceException
      */
-    public void addWorksheet(String workSheetName, int colCount, int rowCount)
-            throws AuthenticationException, MalformedURLException, IOException,
+    public void addWorksheet(
+            final String workSheetName,
+            final int colCount,
+            final int rowCount)
+
+    throws  AuthenticationException,
+            MalformedURLException,
+            IOException,
             ServiceException {
 
         // Create and initialize service.
-        SpreadsheetService service = initializeService();
+        final SpreadsheetService service = initializeService();
 
         // Define the URL to request.
-        URL spreadSheetURL =
+        final URL spreadSheetURL =
                 createSpreadsheetURL(
                     SPREADSHEET_FEED_URL,
                     null, // No key needed
@@ -159,11 +165,11 @@ public class GoogleSpreadsheet {
                     this.projection);
 
         // Make a request to the API and get all spreadsheets.
-        SpreadsheetFeed feed =
+        final SpreadsheetFeed feed =
                 service.getFeed(spreadSheetURL, SpreadsheetFeed.class);
 
-        List<SpreadsheetEntry> spreadsheets = feed.getEntries();
-        if (spreadsheets.size() > 0) {
+        final List<SpreadsheetEntry> spreadsheets = feed.getEntries();
+        if (!spreadsheets.isEmpty()) {
             // Choose a spreadsheet based on a title.
             for (SpreadsheetEntry spreadsheet : spreadsheets) {
                 if (!StringUtils.equals(spreadsheet.getTitle().getPlainText(), this.title)) {
@@ -171,13 +177,13 @@ public class GoogleSpreadsheet {
                 }
 
                 // Create a local representation of the new worksheet.
-                WorksheetEntry worksheet = new WorksheetEntry(colCount, rowCount);
+                final WorksheetEntry worksheet = new WorksheetEntry(colCount, rowCount);
                 worksheet.setTitle(new PlainTextConstruct(workSheetName));
                 
                 // Send the local representation of the worksheet to the API for
                 // creation. The URL to use here is the worksheet feed URL of
                 // our spreadsheet.
-                URL worksheetFeedUrl = spreadsheet.getWorksheetFeedUrl();
+                final URL worksheetFeedUrl = spreadsheet.getWorksheetFeedUrl();
                 service.insert(worksheetFeedUrl, worksheet);
             }
         }
@@ -195,7 +201,7 @@ public class GoogleSpreadsheet {
      * @throws IOException
      * @throws ServiceException
      */
-    public void loadWorksheet(String worksheetTitle)
+    public void loadWorksheet(final String worksheetTitle)
             throws AuthenticationException,
             MalformedURLException,
             IOException,
@@ -207,10 +213,10 @@ public class GoogleSpreadsheet {
         }
 
         // Create and initialize service.
-        SpreadsheetService service = initializeService();
+        final SpreadsheetService service = initializeService();
 
         // Define the URL to request.
-        URL URL_FEED_REQUEST =
+        final URL URL_FEED_REQUEST =
                 createSpreadsheetURL(
                     WORKSHEET_FEED_URL,
                     this.key,
@@ -218,18 +224,19 @@ public class GoogleSpreadsheet {
                     this.projection);
 
         // Make a request to the API and get all worksheets.
-        WorksheetFeed feed =
+        final WorksheetFeed feed =
                 service.getFeed(URL_FEED_REQUEST, WorksheetFeed.class);
 
         if (feed != null) {
-            List<WorksheetEntry> worksheets = feed.getEntries();
+            final List<WorksheetEntry> worksheets = feed.getEntries();
 
             if (worksheets.size() > 0) {
                 for (WorksheetEntry worksheet : worksheets) {
                     // Loop and find the one matching input title.
                     if (worksheet.getTitle().getPlainText().equals(worksheetTitle)) {
-                        URL listFeedUrl = worksheet.getListFeedUrl();
-                        ListFeed listFeed =
+                        final URL listFeedUrl = worksheet.getListFeedUrl();
+
+                        final ListFeed listFeed =
                                 service.getFeed(listFeedUrl, ListFeed.class);
 
                         if (listFeed != null) {
@@ -257,10 +264,10 @@ public class GoogleSpreadsheet {
             ServiceException {
 
         // Create and initialize service.
-        SpreadsheetService service = initializeService();
+        final SpreadsheetService service = initializeService();
 
         // Define the URL to request.
-        URL URL_FEED_REQUEST =
+        final URL URL_FEED_REQUEST =
                 createSpreadsheetURL(
                     WORKSHEET_FEED_URL,
                     this.key,
@@ -268,17 +275,18 @@ public class GoogleSpreadsheet {
                     this.projection);
 
         // Make a request to the API and get all worksheets.
-        WorksheetFeed feed =
+        final WorksheetFeed feed =
                 service.getFeed(URL_FEED_REQUEST, WorksheetFeed.class);
 
         if (feed != null) {
-            List<WorksheetEntry> worksheets = feed.getEntries();
+            final List<WorksheetEntry> worksheets = feed.getEntries();
 
-            if (worksheets.size() > 0) {
+            if (!worksheets.isEmpty()) {
                 // Loop and load all worksheets.
                 for (WorksheetEntry worksheet : worksheets) {
-                    URL listFeedUrl = worksheet.getListFeedUrl();
-                    ListFeed listFeed =
+                    final URL listFeedUrl = worksheet.getListFeedUrl();
+
+                    final ListFeed listFeed =
                             service.getFeed(listFeedUrl, ListFeed.class);
 
                     if (listFeed != null) {
@@ -302,7 +310,7 @@ public class GoogleSpreadsheet {
      * @throws IOException
      * @throws ServiceException
      */
-    public void deleteWorksheet(String worksheetTitle)
+    public void deleteWorksheet(final String worksheetTitle)
             throws AuthenticationException,
             MalformedURLException,
             IOException,
@@ -317,10 +325,10 @@ public class GoogleSpreadsheet {
         data.put(worksheetTitle, null);
 
         // Create and initialize service.
-        SpreadsheetService service = initializeService();
+        final SpreadsheetService service = initializeService();
 
         // Define the URL to request.
-        URL URL_FEED_REQUEST =
+        final URL URL_FEED_REQUEST =
                 createSpreadsheetURL(
                     WORKSHEET_FEED_URL,
                     this.key,
@@ -328,13 +336,13 @@ public class GoogleSpreadsheet {
                     this.projection);
 
         // Make a request to the API and get all worksheets.
-        WorksheetFeed feed =
+        final WorksheetFeed feed =
                 service.getFeed(URL_FEED_REQUEST, WorksheetFeed.class);
 
         if (feed != null) {
-            List<WorksheetEntry> worksheets = feed.getEntries();
+            final List<WorksheetEntry> worksheets = feed.getEntries();
 
-            if (worksheets.size() > 0) {
+            if (!worksheets.isEmpty()) {
                 // Loop and find the one matching input title.
                 for (WorksheetEntry worksheet : worksheets) {
                     if (worksheet.getTitle().getPlainText().equals(worksheetTitle)) {
@@ -353,8 +361,10 @@ public class GoogleSpreadsheet {
      * @throws IOException
      * @throws ServiceException
      */
-    public void writeToWorksheet(String worksheetTitle, List<ListEntry> entries) 
-            throws IOException, ServiceException {
+    public void writeToWorksheet(
+            final String worksheetTitle,
+            final List<ListEntry> entries)
+    throws IOException, ServiceException {
         
         // Check if we have already loaded entries for input worksheet title.
         if (entries == null) {
@@ -362,10 +372,10 @@ public class GoogleSpreadsheet {
         }
 
         // Create and initialize service.
-        SpreadsheetService service = initializeService();
+        final SpreadsheetService service = initializeService();
 
         // Define the URL to request.
-        URL URL_FEED_REQUEST =
+        final URL URL_FEED_REQUEST =
                 createSpreadsheetURL(
                     GoogleSpreadsheet.WORKSHEET_FEED_URL,
                     this.key,
@@ -373,13 +383,13 @@ public class GoogleSpreadsheet {
                     this.projection);
 
         // Make a request to the API and get all worksheets.
-        WorksheetFeed feed =
+        final WorksheetFeed feed =
                 service.getFeed(URL_FEED_REQUEST, WorksheetFeed.class);
 
         if (feed != null) {
-            List<WorksheetEntry> worksheets = feed.getEntries();
+            final List<WorksheetEntry> worksheets = feed.getEntries();
     
-            if (worksheets.size() > 0) {    
+            if (!worksheets.isEmpty()) {
                 URL listFeedUrl = null;
                 
                 for (WorksheetEntry worksheet : worksheets) {
@@ -412,7 +422,7 @@ public class GoogleSpreadsheet {
      * @param worksheetTitle
      *            the title of worksheet whos content is to be printed
      */
-    public void printWorksheet(String worksheetTitle) {
+    public void printWorksheet(final String worksheetTitle) {
         printWorksheet(worksheetTitle, System.out, new TabGSOutputFormatter());
     }
 
@@ -425,9 +435,12 @@ public class GoogleSpreadsheet {
      * @param file
      * @throws FileNotFoundException
      */
-    public void printWorksheet(String worksheetTitle, File file)
+    public void printWorksheet(final String worksheetTitle, final File file)
             throws FileNotFoundException {
-        printWorksheet(worksheetTitle, new PrintStream(file), new TabGSOutputFormatter());
+        printWorksheet(
+                worksheetTitle,
+                new PrintStream(file),
+                new TabGSOutputFormatter());
     }
 
     
@@ -439,25 +452,25 @@ public class GoogleSpreadsheet {
      * @param where
      */
     public void printWorksheet(
-            String worksheetTitle, 
-            PrintStream where, 
-            GSOutputFormatter formatter) {
+            final String worksheetTitle,
+            final PrintStream where,
+            final GSOutputFormatter formatter) {
         
         printWorksheet(this.getEntries(worksheetTitle), where, formatter);
     }
 
     
     /**
-     * Prints <code>entries</code> to <code>where</code>, formating output with
+     * Prints <code>entries</code> to <code>where</code>, formatting output with
      * <code>formatter</code>.
      *
      * @param entries
      * @param where
      */
     protected void printWorksheet(
-            List<ListEntry> entries, 
-            PrintStream where,
-            GSOutputFormatter formatter) {
+            final List<ListEntry> entries,
+            final PrintStream where,
+            final GSOutputFormatter formatter) {
         
         if (entries != null) {
             // Print header.
@@ -477,7 +490,7 @@ public class GoogleSpreadsheet {
      * @param worksheetTitle
      * @return
      */
-    public List<ListEntry> getEntries(String worksheetTitle) {
+    public List<ListEntry> getEntries(final String worksheetTitle) {
         return data.get(worksheetTitle);
     }
 
@@ -501,10 +514,10 @@ public class GoogleSpreadsheet {
         return projection;
     }
 
-    public static final Character URL_PATH_SEPARATOR = '/';
+    public static final char URL_PATH_SEPARATOR = '/';
     
     /**
-     * Returns google spreadesheet api v3 URL.
+     * Returns google spreadsheet api v3 URL.
      * 
      * @param scope
      * @param key
@@ -514,13 +527,13 @@ public class GoogleSpreadsheet {
      * @throws MalformedURLException
      */
     protected static final URL createSpreadsheetURL(
-            String scope,
-            String key,
-            String visibility,
-            String projection)
+            final String scope,
+            final String key,
+            final String visibility,
+            final String projection)
+    throws MalformedURLException {
 
-            throws MalformedURLException {
-        StringBuilder url = new StringBuilder();
+        final StringBuilder url = new StringBuilder();
 
         url.append(scope).append(URL_PATH_SEPARATOR);
 
@@ -543,15 +556,13 @@ public class GoogleSpreadsheet {
      * @return object of class SpreadsheetService with authorization rules set/
      * @throws AuthenticationException
      */
-    protected SpreadsheetService authorize(SpreadsheetService service)
+    protected void authorize(final SpreadsheetService service)
             throws AuthenticationException {
 
         // Setting user credentials.
         if (this.username != null && this.password != null) {
             service.setUserCredentials(this.username, this.password);
         }
-
-        return service;
     }
     
     
@@ -564,15 +575,15 @@ public class GoogleSpreadsheet {
      */
     private SpreadsheetService initializeService() 
             throws AuthenticationException {
-        
-        SpreadsheetService service =
+
+        final SpreadsheetService service =
                 new SpreadsheetService(this.getClass().getName());
 
         // Setting protocol version to newest (version 3).
         service.setProtocolVersion(SpreadsheetService.Versions.V3);
 
         // Setting stuff needed for authorization.
-        service = this.authorize(service);
+        this.authorize(service);
         
         return service;
     }

@@ -18,10 +18,10 @@ package org.hoshisoft.tools.gs.enums;
 
 public enum GoogleDocumentsVisibility {
     PUBLIC("public"), PRIVATE("private");
+
+    final String value;
     
-    String value;
-    
-    private GoogleDocumentsVisibility(String value) {
+    private GoogleDocumentsVisibility(final String value) {
         this.value = value;
     }
     
